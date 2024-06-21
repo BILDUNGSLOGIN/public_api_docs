@@ -1,0 +1,399 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "title" : "BILDUNGSLOGIN License-Retrieval API",
+    "description" : "This API description contains the retrieval of an authentication token for the UCS@school APIs, as well as the route of the BILDUNGSLOGIN license manager plugin, to retrieve user-specific licenses",
+    "version" : "1.1.0",
+    "contact": {
+      "name": "BILDUNGSLOGIN, VBM Service GmbH",
+      "url": "https://info.bildungslogin.de"
+    },
+    "license": {
+      "name": "Creative Commons Attribution Non Commercial No Derivatives 4.0",
+      "identifier": "CC-BY-NC-ND-4.0"
+    }
+  },
+  "servers" : [ {
+    "url" : "https://<FQDN of UCS Server>",
+    "description" : "Server with BILDUNGSLOGIN License Manager Plugin installed"
+  } ],
+  "paths" : {
+    "/ucsschool/apis/bildungslogin/v1/user/{id}" : {
+      "get" : {
+        "tags" : [ "bildungslogin" ],
+        "summary" : "Get",
+        "description" : "Retrieve a users name, license, role, class and school information.",
+        "operationId" : "get_ucsschool_apis_bildungslogin_v1_user__id__get",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "User ID",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "title" : "User ID",
+            "minLength" : 1,
+            "type" : "string",
+            "description" : "User ID"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successful Response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "Validation Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "OAuth2PasswordBearer" : [ ]
+        } ]
+      }
+    },
+    "/ucsschool/apis/auth/token" : {
+      "post" : {
+        "tags" : [ "auth" ],
+        "summary" : "Login For Access Token",
+        "description" : "This route enables LDAP bind authentication against the apps host UCS system.\n:param form_data: The login credentials (username, password)\n:return: If login successful, the JWT data.",
+        "operationId" : "login_for_access_token_ucsschool_apis_auth_token_post",
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/BiLoToken_Retrieval"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Successful Response",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "Validation Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "BiLoToken_Retrieval" : {
+        "title" : "BiLoToken_Retrieval",
+        "required" : [ "password", "username" ],
+        "type" : "object",
+        "properties" : {
+          "grant_type" : {
+            "title" : "Grant Type",
+            "pattern" : "password",
+            "type" : "string"
+          },
+          "username" : {
+            "title" : "Username",
+            "type" : "string"
+          },
+          "password" : {
+            "title" : "Password",
+            "type" : "string"
+          },
+          "scope" : {
+            "title" : "Scope",
+            "type" : "string",
+            "default" : "roles"
+          },
+          "client_id" : {
+            "title" : "Client Id",
+            "type" : "string"
+          },
+          "client_secret" : {
+            "title" : "Client Secret",
+            "type" : "string"
+          }
+        }
+      },
+      "Class" : {
+        "title" : "Class",
+        "required" : [ "id", "name" ],
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "title" : "Name",
+            "maxLength" : 255,
+            "minLength" : 1,
+            "type" : "string",
+            "description" : "Name of the class"
+          },
+          "id" : {
+            "title" : "Id",
+            "maxLength" : 255,
+            "minLength" : 1,
+            "type" : "string",
+            "description" : "School-unique ID of the class"
+          },
+          "licenses" : {
+            "title" : "Licenses",
+            "type" : "array",
+            "description" : "License-Codes attached to the class",
+            "items" : {
+              "maxLength" : 255,
+              "minLength" : 1,
+              "type" : "string"
+            }
+          }
+        },
+        "description" : "User class "
+      },
+      "HTTPValidationError" : {
+        "title" : "HTTPValidationError",
+        "type" : "object",
+        "properties" : {
+          "detail" : {
+            "title" : "Detail",
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "SchoolContext" : {
+        "title" : "SchoolContext",
+        "required" : [ "roles" ],
+        "type" : "object",
+        "properties" : {
+          "school_authority" : {
+            "title" : "School Authority",
+            "maxLength" : 255,
+            "minLength" : 1,
+            "type" : "string",
+            "description" : "School authority"
+          },
+          "school_code" : {
+            "title" : "School Code",
+            "maxLength" : 255,
+            "minLength" : 1,
+            "type" : "string",
+            "description" : "Only for backward compatibility"
+          },
+          "school_identifier" : {
+            "title" : "School Identifier",
+            "maxLength" : 255,
+            "minLength" : 1,
+            "type" : "string",
+            "description" : "A school abbreviation that is officially assigned (state/federal)"
+          },
+          "school_name" : {
+            "title" : "School Name",
+            "maxLength" : 255,
+            "minLength" : 1,
+            "type" : "string",
+            "description" : "A school abbreviation that the publisher can assign freely"
+          },
+          "classes" : {
+            "title" : "Classes",
+            "type" : "array",
+            "description" : "Classes of the school, the user is related to",
+            "items" : {
+              "$ref" : "#/components/schemas/Class"
+            }
+          },
+          "roles" : {
+            "minItems" : 1,
+            "type" : "array",
+            "description" : "Roles in the school, the user is related to",
+            "items" : {
+              "$ref" : "#/components/schemas/UserRole"
+            }
+          },
+          "workgroups" : {
+            "title" : "Workgroups",
+            "type" : "array",
+            "description" : "Workgroups of the school, the user is related to",
+            "items" : {
+              "$ref" : "#/components/schemas/Workgroup"
+            }
+          },
+          "licenses" : {
+            "title" : "Licenses",
+            "type" : "array",
+            "description" : "Licenses attached to the school",
+            "items" : {
+              "maxLength" : 255,
+              "minLength" : 1,
+              "type" : "string"
+            }
+          }
+        },
+        "description" : "Extra information about a user,\ne.g. schools and classes attended, roles within each school."
+      },
+      "Token" : {
+        "title" : "Token",
+        "required" : [ "access_token", "token_type" ],
+        "type" : "object",
+        "properties" : {
+          "access_token" : {
+            "title" : "Access Token",
+            "type" : "string"
+          },
+          "token_type" : {
+            "title" : "Token Type",
+            "type" : "string"
+          }
+        },
+        "description" : "Container class for JWT"
+      },
+      "User" : {
+        "title" : "User",
+        "required" : [ "context", "id" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "title" : "Id",
+            "maxLength" : 255,
+            "minLength" : 1,
+            "type" : "string",
+            "description" : "User-ID"
+          },
+          "first_name" : {
+            "title" : "First Name",
+            "maxLength" : 255,
+            "minLength" : 1,
+            "type" : "string",
+            "description" : "First Name"
+          },
+          "last_name" : {
+            "title" : "Last Name",
+            "maxLength" : 255,
+            "minLength" : 1,
+            "type" : "string",
+            "description" : "Last Name"
+          },
+          "licenses" : {
+            "title" : "Licenses",
+            "type" : "array",
+            "description" : "Licenses assigned to user",
+            "items" : {
+              "maxLength" : 255,
+              "minLength" : 1,
+              "type" : "string"
+            }
+          },
+          "context" : {
+            "title" : "Context",
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/SchoolContext"
+            },
+            "description" : "School related information: classes and roles within each school. Keys of this dictionary is the unique school ID. Must contain at least one element"
+          }
+        },
+        "description" : "A user describing with context and license information "
+      },
+      "UserRole" : {
+        "title" : "UserRole",
+        "type" : "string",
+        "description" : "User roles ",
+        "enum" : [ "student", "teacher", "staff" ]
+      },
+      "ValidationError" : {
+        "title" : "ValidationError",
+        "required" : [ "loc", "msg", "type" ],
+        "type" : "object",
+        "properties" : {
+          "loc" : {
+            "title" : "Location",
+            "type" : "array",
+            "items" : {
+              "anyOf" : [ {
+                "type" : "string"
+              }, {
+                "type" : "integer"
+              } ]
+            }
+          },
+          "msg" : {
+            "title" : "Message",
+            "type" : "string"
+          },
+          "type" : {
+            "title" : "Error Type",
+            "type" : "string"
+          }
+        }
+      },
+      "Workgroup" : {
+        "title" : "Workgroup",
+        "required" : [ "id", "name" ],
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "title" : "Name",
+            "maxLength" : 255,
+            "minLength" : 1,
+            "type" : "string",
+            "description" : "Name of the workgroup"
+          },
+          "id" : {
+            "title" : "Id",
+            "maxLength" : 255,
+            "minLength" : 1,
+            "type" : "string",
+            "description" : "School-unique ID of the workgroup"
+          },
+          "licenses" : {
+            "title" : "Licenses",
+            "type" : "array",
+            "description" : "License-Codes attached to the workgroup",
+            "items" : {
+              "maxLength" : 255,
+              "minLength" : 1,
+              "type" : "string"
+            }
+          }
+        },
+        "description" : "User workgroup "
+      }
+    },
+    "securitySchemes" : {
+      "OAuth2PasswordBearer" : {
+        "type" : "oauth2",
+        "flows" : {
+          "password" : {
+            "tokenUrl" : "https://<FQDN of UCS Server>/ucsschool/apis/auth/token",
+            "scopes" : { }
+          }
+        }
+      }
+    }
+  }
+}

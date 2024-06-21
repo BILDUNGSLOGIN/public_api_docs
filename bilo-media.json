@@ -1,0 +1,319 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "title" : "BILDUNGSLOGIN Metadata API",
+    "description": "Provisioning of media- metadata",
+    "version" : "1.1.0",
+    "contact": {
+      "name": "BILDUNGSLOGIN, VBM Service GmbH",
+      "url": "https://info.bildungslogin.de"
+    },
+    "license": {
+      "name": "Creative Commons Attribution Non Commercial No Derivatives 4.0",
+      "identifier": "CC-BY-NC-ND-4.0"
+    }
+  },
+  "paths" : {
+    "/media/query" : {
+      "post" : {
+        "description" : "Basierend auf einer Suchanfrage (`MediaQuery`), wird eine Liste von passenden \nSuchergebnissen (`MediaQueryResult`) mit Medien-Metadaten zu dieser Suchanfrage \ngeliefert.\n\nEine Suchanfrage besteht dabei aus einer beliebigen Menge von Einzelanfragen (`SingleMediaQuery`)\nnach jeweils genau einem Medium. Diese Einzelanfragen werden separat voneinander\nbearbeitet, die Resultate werden gesammelt als (`MediaQueryResult`) zurückgeliefert.\n\nDie Liste der Suchergebnisse enthält zu jeder Einzelanfrage eine Antwort (`SingleMediaQueryResult`), \nbestehend aus einem Status-Code (gefunden, nicht gefunden, Fehler), sowie (im Erfolgsfall) den \nMedien-Metadaten\n",
+        "operationId" : "POST_media-query",
+        "requestBody" : {
+          "content" : {
+            "application/vnd.de.bildungslogin.mediaquery+json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/MediaQuery"
+              },
+              "example" : [ {
+                "id" : "urn:bilo:medium:A0023#48-85-TZ"
+              }, {
+                "id" : "urn:bilo:medium:no-such-title"
+              } ]
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Liste der zur Suchanfrage gefundenen Medien-Metadaten.\n",
+            "content" : {
+              "application/vnd.de.bildungslogin.mediaquery-result+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MediaQueryResult"
+                },
+                "example" : [ {
+                  "query" : {
+                    "id" : "urn:bilo:medium:A0023#48-85-TZ"
+                  },
+                  "status" : 200,
+                  "data" : {
+                    "id" : "urn:bilo:medium:A0023#48-85-TZ",
+                    "title" : "Antolin",
+                    "description" : "Mit Lesen Punkten!",
+                    "author" : "Schrödel",
+                    "publisher" : "SHR",
+                    "cover" : {
+                      "href" : "https://www.antolin.de/images_css/rabe.gif",
+                      "rel" : "src"
+                    },
+                    "coverSmall" : {
+                      "href" : "https://www.antolin.de/images_css/rabe.gif",
+                      "rel" : "src"
+                    },
+                    "modified" : 1458500544
+                  }
+                }, {
+                  "query" : {
+                    "id" : "urn:bilo:medium:no-such-title"
+                  },
+                  "status" : 404
+                } ]
+              }
+            }
+          },
+          "400" : {
+            "description" : "Ungültige Anfrage   \n"
+          }
+        },
+        "security" : [ {
+          "id_broker_client_token" : [ "licensemanager" ],
+          "id_broker_client_token_test" : [ "licensemanager" ]
+        } ]
+      }
+    },
+    "/media/feed" : {
+      "post" : {
+        "description" : "Es werden die IDs für alle diejenigen Medien geliefert, \nwelche sich nach einem gegebenen Zeitpunkt geändert haben.\n\nDer Zeitpunkt wird als Parameter in der Anfrage (`MediafeedQuery`) übergeben.\n",
+        "operationId" : "POST_media-feed",
+        "requestBody" : {
+          "content" : {
+            "application/vnd.de.bildungslogin.mediafeed-query+json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/MediafeedQuery"
+              },
+              "example" : {
+                "modifiedAfter" : 1458500544
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Liste von IDs der zur Suchanfrage gefundenen Medien.\n",
+            "content" : {
+              "application/vnd.de.bildungslogin.mediafeed-result+json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MediafeedResult"
+                },
+                "example" : [ "urn:bilo:medium:A0023#48-85-TZ", "urn:bilo:medium:A0023#48-45-AX", "urn:bilo:medium:A0023#92-71-UI", "urn:bilo:medium:A0023#23-99-OP" ]
+              }
+            }
+          },
+          "400" : {
+            "description" : "Ungültige Anfrage   \n"
+          }
+        },
+        "security" : [ {
+          "id_broker_client_token" : [ "licensemanager" ],
+          "id_broker_client_token_test" : [ "licensemanager" ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "SingleMediaQuery" : {
+        "required" : [ "id" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/MediumIdentifier"
+          }
+        },
+        "description" : "Suchanfrage nach einem einzelnen Medium."
+      },
+      "MediaQuery" : {
+        "title" : "MediaQuery",
+        "minItems" : 0,
+        "type" : "array",
+        "description" : "Definiert eine Suchanfrage für eine Liste von Medien, bestehend aus einer Menge von Einzelanfragen",
+        "items" : {
+          "$ref" : "#/components/schemas/SingleMediaQuery"
+        }
+      },
+      "SingleMediaQueryResult" : {
+        "required" : [ "query", "status" ],
+        "type" : "object",
+        "properties" : {
+          "query" : {
+            "$ref" : "#/components/schemas/SingleMediaQuery"
+          },
+          "status" : {
+            "type" : "integer",
+            "description" : "200 - Anfrage ok und Medium gefunden, 400 - Anfrage ungültig, 404 - kein Medium zur Anfrage gefunden",
+            "enum" : [ 200, 400, 404 ]
+          },
+          "data" : {
+            "$ref" : "#/components/schemas/mediaschema"
+          }
+        },
+        "description" : "Ergebnis einer Suchanfrage"
+      },
+      "MediaQueryResult" : {
+        "title" : "Media Query Result",
+        "minItems" : 0,
+        "type" : "array",
+        "description" : "Ergebnis einer Suchanfrage nach Medien-Metadaten",
+        "items" : {
+          "$ref" : "#/components/schemas/SingleMediaQueryResult"
+        }
+      },
+      "MediafeedQuery" : {
+        "title" : "MediafeedQuery",
+        "required" : [ "modifiedAfter" ],
+        "type" : "object",
+        "properties" : {
+          "modifiedAfter" : {
+            "$ref" : "#/components/schemas/Timestamp"
+          }
+        },
+        "description" : "Definiert eine Suchanfrage anhand eines Zeitpunkts"
+      },
+      "MediafeedResult" : {
+        "title" : "Mediafeed",
+        "minItems" : 0,
+        "type" : "array",
+        "description" : "Ergebnis einer Suchanfrage nach Änderungszeitpunkt als Liste von IDs geänderter Medien",
+        "items" : {
+          "$ref" : "#/components/schemas/MediumIdentifier"
+        }
+      },
+      "MediumIdentifier" : {
+        "$ref" : "#/components/schemas/urn"
+      },
+      "urn" : {
+        "pattern" : "^urn(:[a-z0-9]{1,32})+:[\\S]+$",
+        "type" : "string",
+        "description" : "Uniform Resource Name, https://de.wikipedia.org/wiki/Uniform_Resource_Name"
+      },
+      "mediaschema" : {
+        "title" : "Medium",
+        "required" : [ "cover", "coverSmall", "id", "modified", "publisher", "title", "variants" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "$ref" : "#/components/schemas/MediumIdentifier"
+          },
+          "title" : {
+            "$ref" : "#/components/schemas/Title"
+          },
+          "author" : {
+            "$ref" : "#/components/schemas/Author"
+          },
+          "description" : {
+            "$ref" : "#/components/schemas/Description"
+          },
+          "publisher" : {
+            "$ref" : "#/components/schemas/Publisher"
+          },
+          "cover" : {
+            "$ref" : "#/components/schemas/Cover"
+          },
+          "coverSmall" : {
+            "$ref" : "#/components/schemas/CoverSmall"
+          },
+          "modified" : {
+            "$ref" : "#/components/schemas/ModifiedTimestamp"
+          }
+        },
+        "description" : "Ein Eintrag bzw. Element im Medienregal. Repräsentiert einen Verweis auf einen digitalen Bildungsinhalt"
+      },
+      "Title" : {
+        "maxLength" : 100,
+        "minLength" : 1,
+        "type" : "string",
+        "description" : "Titel des Angebots zur Anzeige im Medienregal, z.B. bei einem Buch der Buchtitel, bei einer Anwendung Name der Anwendung etc."
+      },
+      "Author" : {
+        "maxLength" : 100,
+        "type" : "string",
+        "description" : "Autor des Medium"
+      },
+      "Description" : {
+        "maxLength" : 500,
+        "type" : "string",
+        "description" : "Beschreibung des Mediums, verwendet zur Anzeige im Bildungslogin Medienregal"
+      },
+      "Publisher" : {
+        "maxLength" : 10,
+        "type" : "string",
+        "description" : "Der Verlag, der dieses Medium bereitstellt. Als eindeutiger Bezeichner wird hier das Verlagskürzel verwendet, welches auch als Prefix der BundleCodes dient"
+      },
+      "Cover" : {
+        "$ref" : "#/components/schemas/link"
+      },
+      "link" : {
+        "type" : "object",
+        "properties" : {
+          "href" : {
+            "maxLength" : 500,
+            "type" : "string",
+            "description" : "eine gültige URL",
+            "format" : "uri"
+          },
+          "rel" : {
+            "type" : "string",
+            "enum" : [ "src", "self" ]
+          }
+        },
+        "description" : "Ein Link-Element analog zum HTML-Link. Die Semantik (wohin führt der Link) wird durch das rel-Attribut ausgedrückt"
+      },
+      "CoverSmall" : {
+        "$ref" : "#/components/schemas/link"
+      },
+      "ModifiedTimestamp" : {
+        "$ref" : "#/components/schemas/Timestamp"
+      },
+      "Timestamp" : {
+        "type" : "integer",
+        "description" : "Ein Zeitstempel als POSIX timestamp integer (https://en.wikipedia.org/wiki/Unix_time)"
+      }
+    },
+    "responses" : { },
+    "parameters" : { },
+    "examples" : { },
+    "requestBodies" : { },
+    "headers" : { },
+    "securitySchemes" : {
+      "id_broker_client_token" : {
+        "type" : "oauth2",
+        "description" : "Ein __consumer__ authentifiziert sich mit einem OAuth2 AccessToken (ohne Nutzerbezug) vom Typ \"Bearer\"\r\n(siehe **[The OAuth 2.0 Authorization Framework: Bearer Token Usage](https://tools.ietf.org/html/rfc6750)**),\r\nausgestellt durch den BILDUNGSLOGIN ID-Broker.\r\n\r\nDer Prozess zur Erzeugung dieser Tokens verwendet den\r\n**[OAuth 2.0 client credentials grant](http://tools.ietf.org/html/rfc6749#section-4.4)**\r\nflow und ist unter **Erlangung API- Token / BiLo-Nutzung** auf\r\n**[Anbindungsdetails Verlage an ID-Broker]()**\r\nbeschrieben.\r\n",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://login.sso.bildungslogin.de/realms/bilo_broker/protocol/openid-connect/token",
+            "scopes" : {
+              "licensemanager" : "Able to retrieve media data",
+              "publisher" : "Able to write media data"
+            }
+          }
+        }
+      },
+      "id_broker_client_token_test" : {
+        "type" : "oauth2",
+        "description" : "Ein (Test-) __consumer__ authentifiziert sich mit einem OAuth2 AccessToken (ohne Nutzerbezug) vom Typ \"Bearer\"\r\n(siehe **[The OAuth 2.0 Authorization Framework: Bearer Token Usage](https://tools.ietf.org/html/rfc6750)**),\r\nausgestellt durch den BILDUNGSLOGIN ID-Broker.\r\n\r\nDer Prozess zur Erzeugung dieser Tokens verwendet den\r\n**[OAuth 2.0 client credentials grant](http://tools.ietf.org/html/rfc6749#section-4.4)**\r\nflow und ist unter **Erlangung API- Token / BiLo-Nutzung** auf\r\n**[Anbindungsdetails Verlage an ID-Broker]()**\r\nbeschrieben.\r\n",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://login.test.sso.bildungslogin.de/realms/BiLo-Broker/protocol/openid-connect/token",
+            "scopes" : {
+              "licensemanager" : "Able to retrieve media data",
+              "publisher" : "Able to write media data"
+            }
+          }
+        }
+      }
+    },
+    "links" : { },
+    "callbacks" : { }
+  }
+}

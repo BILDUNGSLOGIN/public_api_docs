@@ -1,0 +1,232 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "title" : "BILDUNGSLOGIN License-Package API",
+    "description": "Provisioning of License Packages",
+    "version" : "2.3.0",
+    "contact": {
+      "name": "BILDUNGSLOGIN, VBM Service GmbH",
+      "url": "https://info.bildungslogin.de"
+    },
+    "license": {
+      "name": "Creative Commons Attribution Non Commercial No Derivatives 4.0",
+      "identifier": "CC-BY-NC-ND-4.0"
+    }
+  },
+  "paths" : {
+    "/licensepackage" : {
+      "get" : {
+        "description" : "Abholen von Lizenzpaketen aus Bildungslogin durch einen Lizenzmanager. \n",
+        "operationId" : "GET_licensepackage",
+        "parameters" : [ {
+          "name" : "package_id",
+          "in" : "query",
+          "description" : "Die Abholnummer, welche eindeutig einem Lizenzpaket zugeordnet ist. \nSie wird beim Erwerb des Lizenzpaketes erzeugt und dem Käufer zugänglich gemacht. \nMit dieser Nummer holt der Käufer die Lizenzpakete über den Lizenzmanager wieder ab.\n",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Datenpaket mit dem Lizenzpaket und der Abholnummer (_package\\_id_). <br> Mit der Abholnummer muss die erfolgreiche Abholung später mit einem Request (<b>/licensepackage/confirm</b>) bestätigt werden.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "licenses" : [ {
+                      "lizenzcode" : "f5sdfsdf-345c-4237-a451-4444736eb011",
+                      "product_id" : "918-3-16-062213-4",
+                      "lizenztyp" : "Einzellizenz",
+                      "lizenzanzahl" : 1,
+                      "lizenzgeber" : "VHT",
+                      "kaufreferenz" : "2014-05-11T01:28:16 -02:00 4572022",
+                      "school_identifier" : "OS_Saarland_023",
+                      "nutzungssysteme" : "Antolin",
+                      "gueltigkeitsbeginn" : "11-05-2021",
+                      "gueltigkeitsende" : "14-12-2022",
+                      "gueltigkeitsdauer" : 12,
+                      "sonderlizenz" : "Lehrer"
+                    }, {
+                      "lizenzcode" : "7bd46a45-345c-4237-a451-4444736eb011",
+                      "product_id" : "918-3-22-062023-4",
+                      "lizenztyp" : "Schullizenz",
+                      "lizenzanzahl" : 2,
+                      "lizenzgeber" : "VHT"
+                    } ],
+                    "package_id" : "VHT-9MV-EYD-iz5"
+                  }
+                }
+              }
+            }
+          },
+          "208" : {
+            "description" : "Das Paket wurde bereits abgeholt und die Abholung wurde bereits bestätigt.\nEs wird zusätzlich das Datenpaket mit dem Lizenzpaket und der Abholnummer \n(_package\\_id_) im Body zurück geliefert. <br>\n",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "licenses" : [ {
+                      "lizenzcode" : "f5sdfsdf-345c-4237-a451-4444736eb011",
+                      "product_id" : "918-3-16-062213-4",
+                      "lizenztyp" : "Einzellizenz",
+                      "lizenzanzahl" : 1,
+                      "lizenzgeber" : "VHT",
+                      "kaufreferenz" : "2014-05-11T01:28:16 -02:00 4572022",
+                      "school_identifier" : "OS_Saarland_023",
+                      "nutzungssysteme" : "Antolin",
+                      "gueltigkeitsbeginn" : "11-05-2021",
+                      "gueltigkeitsende" : "14-12-2022",
+                      "gueltigkeitsdauer" : 12,
+                      "sonderlizenz" : "Lehrer"
+                    }, {
+                      "lizenzcode" : "7bd46a45-345c-4237-a451-4444736eb011",
+                      "product_id" : "918-3-22-062023-4",
+                      "lizenztyp" : "Schullizenz",
+                      "lizenzanzahl" : 2,
+                      "lizenzgeber" : "VHT"
+                    } ],
+                    "package_id" : "VHT-9MV-EYD-iz5"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "kein Lizenzpaket zur übergebenen Abholnummer gefunden\n"
+          },
+          "500" : {
+            "description" : "Bei der Verarbeitung ist ein interner Fehler aufgetreten.\n"
+          }
+        },
+        "security" : [ {
+          "id_broker_client_token" : [ "licensepackage:read" ],
+          "id_broker_client_token_test" : [ "licensepackage:read" ]
+        } ]
+      }
+    },
+    "/licensepackage/confirm" : {
+      "post" : {
+        "description" : "Bestätigung der korrekten Abholung eines Lizenzpaketes.\n",
+        "operationId" : "POST_licensepackage-confirm",
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/licensepackage_confirm_body"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Abholung des Lizenzpakets wurde bestätigt und in der Datenbank vermerkt."
+          },
+          "404" : {
+            "description" : "Die Abholnummer kann nicht in der Datenbank gefunden werden.\n"
+          },
+          "409" : {
+            "description" : "Die Abholung wurde bereits bestätigt.\n"
+          }
+        },
+        "security" : [ {
+          "id_broker_client_token" : [ "licensepackage:read" ],
+          "id_broker_client_token_test" : [ "licensepackage:read" ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "licensepackage_body" : {
+        "required" : [ "licenses" ],
+        "type" : "object",
+        "properties" : {
+          "package_id" : {
+            "title" : "CollectionNumber",
+            "type" : "string",
+            "description" : "Die Abholnummer, welche eindeutig einem Lizenzpaket zugeordnet ist. \nSie wird beim Erwerb des Lizenzpaketes erzeugt \nund dem Käufer zugänglich gemacht. \nMit dieser Nummer holt der Käufer die Lizenzpakete \nüber den Lizenzmanager wieder ab. \n<br>\n__Hinweis__ wird der Parameter __package\\_id__ nicht mit übergeben, \nwird im Response eine von Bildungslogin erzeugte __Abholnummer__ __(package\\_id)__ übergeben.\n"
+          },
+          "licenses" : {
+            "title" : "Lizences",
+            "type" : "object",
+            "description" : "Das Lizenzpaket im JSON Format.\n",
+            "example" : {
+              "licenses" : [ {
+                "lizenzcode" : "f5sdfsdf-345c-4237-a451-4444736eb011",
+                "product_id" : "918-3-16-062213-4",
+                "lizenztyp" : "Einzellizenz",
+                "lizenzanzahl" : 1,
+                "lizenzgeber" : "VHT",
+                "kaufreferenz" : "2014-05-11T01:28:16 -02:00 4572022",
+                "school_identifier" : "OS_Saarland_023",
+                "nutzungssysteme" : "Antolin",
+                "gueltigkeitsbeginn" : "11-05-2021",
+                "gueltigkeitsende" : "14-12-2022",
+                "gueltigkeitsdauer" : "12",
+                "sonderlizenz" : "Lehrer"
+              }, {
+                "lizenzcode" : "7bd46a45-345c-4237-a451-4444736eb011",
+                "product_id" : "918-3-22-062023-4",
+                "lizenztyp" : "Schullizenz",
+                "lizenzanzahl" : 2,
+                "lizenzgeber" : "VHT"
+              } ]
+            }
+          }
+        }
+      },
+      "licensepackage_confirm_body" : {
+        "required" : [ "package_id" ],
+        "type" : "object",
+        "properties" : {
+          "package_id" : {
+            "title" : "CollectionNumber",
+            "type" : "string",
+            "description" : "Die Abholnummer, welche genau einem Lizenzpaket zugeordnet ist.\n"
+          }
+        }
+      }
+    },
+    "responses" : { },
+    "parameters" : { },
+    "examples" : { },
+    "requestBodies" : { },
+    "headers" : { },
+    "securitySchemes" : {
+      "id_broker_client_token" : {
+        "type" : "oauth2",
+        "description" : "Ein __consumer__ authentifiziert sich mit einem OAuth2 AccessToken (ohne Nutzerbezug) vom Typ \"Bearer\"\r\n(siehe **[The OAuth 2.0 Authorization Framework: Bearer Token Usage](https://tools.ietf.org/html/rfc6750)**),\r\nausgestellt durch den BILDUNGSLOGIN ID-Broker.\r\n\r\nDer Prozess zur Erzeugung dieser Tokens verwendet den\r\n**[OAuth 2.0 client credentials grant](http://tools.ietf.org/html/rfc6749#section-4.4)**\r\nflow und ist unter **Erlangung API- Token / BiLo-Nutzung** auf\r\n**[Anbindungsdetails Verlage an ID-Broker]()**\r\nbeschrieben.\r\n",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://login.sso.bildungslogin.de/realms/bilo_broker/protocol/openid-connect/token",
+            "scopes" : {
+              "licensepackage:write" : "Allowed to post new license packages",
+              "licensepackage:read" : "Allowed to query and config license packages"
+            }
+          }
+        }
+      },
+      "id_broker_client_token_test" : {
+        "type" : "oauth2",
+        "description" : "Ein (Test-) __consumer__ authentifiziert sich mit einem OAuth2 AccessToken (ohne Nutzerbezug) vom Typ \"Bearer\"\r\n(siehe **[The OAuth 2.0 Authorization Framework: Bearer Token Usage](https://tools.ietf.org/html/rfc6750)**),\r\nausgestellt durch den BILDUNGSLOGIN ID-Broker.\r\n\r\nDer Prozess zur Erzeugung dieser Tokens verwendet den\r\n**[OAuth 2.0 client credentials grant](http://tools.ietf.org/html/rfc6749#section-4.4)**\r\nflow und ist unter **Erlangung API- Token / BiLo-Nutzung** auf\r\n**[Anbindungsdetails Verlage an ID-Broker]()**\r\nbeschrieben.\r\n",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://login.test.sso.bildungslogin.de/realms/BiLo-Broker/protocol/openid-connect/token",
+            "scopes" : {
+              "licensepackage:write" : "Allowed to post new license packages",
+              "licensepackage:read" : "Allowed to query and config license packages"
+            }
+          }
+        }
+      }
+    },
+    "links" : { },
+    "callbacks" : { }
+  }
+}
