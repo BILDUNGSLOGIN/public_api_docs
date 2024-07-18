@@ -1,0 +1,437 @@
+{
+    "openapi" : "3.1.0",
+    "info" : {
+        "title" : "Organization Structure Lookup",
+        "description" : "Provides for the retrieval of organizational structure data (organizations, groups, users and their dependencies).",
+        "version" : "1.1",
+        "contact": {
+            "name": "BILDUNGSLOGIN, VBM Service GmbH",
+            "url": "https://info.bildungslogin.de"
+        },
+        "license": {
+            "name": "Creative Commons Attribution Non Commercial No Derivatives 4.0",
+            "identifier": "CC-BY-NC-ND-4.0"
+        }
+    },
+    "servers" : [ {
+      "url" : "https://<FQDN>/api/v1",
+      "description" : "FQDN of the API- Server"
+    } ],
+    "paths" : {
+      "/{tenant_id}/orgs/{org_id}" : {
+        "get" : {
+          "tags" : [ "org" ],
+          "summary" : "Get Orgstructure",
+          "description" : "get the complete organization structure of organizations for a tenant",
+          "operationId" : "get_orgstructure__tenant_id__orgs__org_id__get",
+          "parameters" : [ {
+            "name" : "tenant_id",
+            "in" : "path",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "title" : "Tenant Id",
+              "minLength" : 3,
+              "type" : "string",
+              "description" : "tenant id unique within this licensemanager instance.\nNOT case sensitive."
+            }
+          }, {
+            "name" : "org_id",
+            "in" : "path",
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "title" : "Org Id",
+              "maxLength" : 255,
+              "minLength" : 1,
+              "type" : "string",
+              "description" : "IdP-wide identifier of the organization",
+              "example" : "org-01"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful Response",
+              "content" : {
+                "application/json" : {
+                  "schema" : {
+                    "title" : "Response Get Orgstructure TenantId Orgs OrgId",
+                    "type" : "array",
+                    "items" : {
+                      "$ref" : "#/components/schemas/OrganizationStructure"
+                    }
+                  }
+                }
+              }
+            },
+            "422" : {
+              "description" : "Validation Error",
+              "content" : {
+                "application/json" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/{tenant_id}/org_info" : {
+        "get" : {
+          "tags" : [ "org" ],
+          "summary" : "Get Organizations",
+          "description" : "get an overview of all orgs for the tenant visible to the current user",
+          "operationId" : "get_orgstructure__tenant_id__orgs__get",
+          "parameters" : [ {
+            "name" : "tenant_id",
+            "in" : "path",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "title" : "Tenant Id",
+              "minLength" : 3,
+              "type" : "string",
+              "description" : "tenant id unique within this licensemanager instance.\nNOT case sensitive."
+            }
+          }
+         ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful Response",
+              "content" : {
+                "application/json" : {
+                  "schema" : {
+                    "title" : "Response Get Orgstructure Info",
+                    "type" : "array",
+                    "items" : {
+                      "$ref" : "#/components/schemas/OrganizationInfo"
+                    }
+                  }
+                }
+              }
+            },
+            "422" : {
+              "description" : "Validation Error",
+              "content" : {
+                "application/json" : {
+                  "schema" : {
+                    "$ref" : "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components" : {
+      "schemas" : {
+        "Group" : {
+          "title" : "Group",
+          "required" : [ "group_type", "id", "name", "users" ],
+          "type" : "object",
+          "properties" : {
+            "id" : {
+              "title" : "Id",
+              "maxLength" : 255,
+              "minLength" : 1,
+              "type" : "string",
+              "description" : "Organization-unique ID of the group",
+              "example" : "2ea74a4b-005e-460e-a23f-70f2c9cdc8bf"
+            },
+            "name" : {
+              "title" : "Name",
+              "maxLength" : 255,
+              "minLength" : 1,
+              "type" : "string",
+              "description" : "human readable name of the group",
+              "example" : "Klasse 5a"
+            },
+            "group_type" : {
+              "$ref" : "#/components/schemas/GroupType"
+            },
+            "users" : {
+              "title" : "Users",
+              "type" : "array",
+              "items" : {
+                "maxLength" : 255,
+                "minLength" : 1,
+                "type" : "string",
+                "description" : "identifier for a user within an organization"
+              }
+            }
+          },
+          "description" : "single group, WITH users"
+        },
+        "GroupType" : {
+          "title" : "GroupType",
+          "type" : "string",
+          "enum" : [ "class", "workgroup", "other" ]
+        },
+        "HTTPValidationError" : {
+          "title" : "HTTPValidationError",
+          "type" : "object",
+          "properties" : {
+            "detail" : {
+              "title" : "Detail",
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/ValidationError"
+              }
+            }
+          }
+        },
+        "OrganizationStructure" : {
+          "title" : "OrganizationStructure",
+          "required" : [ "groups", "id", "org_type", "users" ],
+          "type" : "object",
+          "properties" : {
+            "id" : {
+              "title" : "Id",
+              "maxLength" : 255,
+              "minLength" : 1,
+              "type" : "string",
+              "description" : "IdP-wide identifier of the organization",
+              "example" : "org-01"
+            },
+            "org_type" : {
+              "$ref" : "#/components/schemas/OrganizationType"
+            },
+            "identifier" : {
+              "title" : "Identifier",
+              "anyOf" : [ {
+                "maxLength" : 255,
+                "minLength" : 1,
+                "type" : "string",
+                "description" : "An identifier (e.g. school abbreviation) that is officially assigned (state/federal)",
+                "example" : "NI-142342"
+              }, {
+                "type" : "null"
+              } ]
+            },
+            "authority" : {
+              "title" : "Authority",
+              "anyOf" : [ {
+                "description" : "Organization authority (e.g. Schulträger)",
+                "example" : "Landesverwaltung X",
+                "anyOf" : [ {
+                  "maxLength" : 255,
+                  "minLength" : 1,
+                  "type" : "string"
+                }, {
+                  "type" : "null"
+                } ]
+              }, {
+                "type" : "null"
+              } ]
+            },
+            "name" : {
+              "title" : "Name",
+              "anyOf" : [ {
+                "maxLength" : 255,
+                "minLength" : 1,
+                "type" : "string",
+                "description" : "A name that the IdP can assign freely",
+                "example" : "63. Grundschule 'Johann Gottlieb Naumann"
+              }, {
+                "type" : "null"
+              } ]
+            },
+            "groups" : {
+              "title" : "Groups",
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/Group"
+              }
+            },
+            "users" : {
+              "title" : "Users",
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/UserInfo"
+              }
+            }
+          },
+          "description" : "Single organisation with COMPLETE structure (groups and users).\nIntended as a COMPLETE model for ALL data of an organisation,\nprovided by the OrgStructureAdapter."
+        },
+        "OrganizationInfo": {
+          "title" : "OrganizationStructure",
+          "required" : [ "groups", "id", "org_type", "users" ],
+          "type" : "object",
+          "properties" : {
+            "id" : {
+              "title" : "Id",
+              "maxLength" : 255,
+              "minLength" : 1,
+              "type" : "string",
+              "description" : "IdP-wide identifier of the organization",
+              "example" : "org-01"
+            },
+            "org_type" : {
+              "$ref" : "#/components/schemas/OrganizationType"
+            },
+            "identifier" : {
+              "title" : "Identifier",
+              "anyOf" : [ {
+                "maxLength" : 255,
+                "minLength" : 1,
+                "type" : "string",
+                "description" : "An identifier (e.g. school abbreviation) that is officially assigned (state/federal)",
+                "example" : "NI-142342"
+              }, {
+                "type" : "null"
+              } ]
+            },
+            "authority" : {
+              "title" : "Authority",
+              "anyOf" : [ {
+                "description" : "Organization authority (e.g. Schulträger)",
+                "example" : "Landesverwaltung X",
+                "anyOf" : [ {
+                  "maxLength" : 255,
+                  "minLength" : 1,
+                  "type" : "string"
+                }, {
+                  "type" : "null"
+                } ]
+              }, {
+                "type" : "null"
+              } ]
+            },
+            "name" : {
+              "title" : "Name",
+              "anyOf" : [ {
+                "maxLength" : 255,
+                "minLength" : 1,
+                "type" : "string",
+                "description" : "A name that the IdP can assign freely",
+                "example" : "63. Grundschule 'Johann Gottlieb Naumann"
+              }, {
+                "type" : "null"
+              } ]
+            }
+          },
+          "description" : "Single organisation with COMPLETE structure (groups and users).\nIntended as a COMPLETE model for ALL data of an organisation,\nprovided by the OrgStructureAdapter."
+        },
+        "OrganizationType" : {
+          "title" : "OrganizationType",
+          "type" : "string"
+        },
+        "UserInfo" : {
+          "title" : "UserInfo",
+          "required" : [ "id", "roles" ],
+          "type" : "object",
+          "properties" : {
+            "id" : {
+              "title" : "Id",
+              "maxLength" : 255,
+              "minLength" : 1,
+              "type" : "string",
+              "description" : "identifier for a user within an organization"
+            },
+            "first_name" : {
+              "title" : "First Name",
+              "anyOf" : [ {
+                "maxLength" : 255,
+                "minLength" : 1,
+                "type" : "string",
+                "description" : "First Name",
+                "example" : "Max"
+              }, {
+                "type" : "null"
+              } ]
+            },
+            "last_name" : {
+              "title" : "Last Name",
+              "anyOf" : [ {
+                "maxLength" : 255,
+                "minLength" : 1,
+                "type" : "string",
+                "description" : "Last Name",
+                "example" : "Musternamm"
+              }, {
+                "type" : "null"
+              } ]
+            },
+            "user_alias" : {
+              "title" : "User Alias",
+              "anyOf" : [ {
+                "maxLength" : 255,
+                "minLength" : 1,
+                "type" : "string",
+                "description" : "User Alias",
+                "example" : "Max M."
+              }, {
+                "type" : "null"
+              } ]
+            },
+            "roles" : {
+              "title" : "Roles",
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/UserRole"
+              }
+            }
+          }
+        },
+        "UserRole" : {
+          "title" : "UserRole",
+          "type" : "string",
+          "description" : "user role within an organization",
+          "enum" : [ "student", "teacher", "admin" ]
+        },
+        "ValidationError" : {
+          "title" : "ValidationError",
+          "required" : [ "loc", "msg", "type" ],
+          "type" : "object",
+          "properties" : {
+            "loc" : {
+              "title" : "Location",
+              "type" : "array",
+              "items" : {
+                "anyOf" : [ {
+                  "type" : "string"
+                }, {
+                  "type" : "integer"
+                } ]
+              }
+            },
+            "msg" : {
+              "title" : "Message",
+              "type" : "string"
+            },
+            "type" : {
+              "title" : "Error Type",
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "securitySchemes" : {
+        "client_token" : {
+          "type" : "oauth2",
+          "description" : "Cliend Credentials Grant Token",
+          "flows" : {
+            "clientCredentials" : {
+              "tokenUrl" : "https://<FQDN>/realms/<realm>/protocol/openid-connect/token",
+              "scopes" : {
+                "org_admin" : "Example: Able to retrieve all structure data.",
+                "administered_orgs" : "Example: Allow administration of {org_id}'s listed in resulting claim. Required if no auth_orgs- route is provided."
+              }
+            },
+            "authorizationCode" : {
+              "authorizationUrl" : "https://<FQDN>/realms/<realm>/protocol/openid-connect/auth",
+              "tokenUrl" : "https://<FQDN>/realms/<realm>/protocol/openid-connect/token",
+              "scopes" : {
+                "org_admin" : "Example: Able to retrieve all structure data relevant to this user. Required to distinguish the user- role.",
+                "administered_orgs" : "Example: Allow administration of {org_id}'s listed in resulting claim. Required if no auth_orgs- route is provided."
+              }
+            }
+          }
+        }
+      }
+    }
+  }

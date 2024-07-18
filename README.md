@@ -17,3 +17,7 @@ The following API's are being used by BILDUNGSLOGIN and Publishers part of the A
 
 [This API](bilo-licenseretrieval_v1.json) is used for the retrieval of user- specific licenses, as well as user- context
 
+## BILDUNGSLOGIN BiLo-Connect API
+
+[This API](bilo-connect.json) is used for the retrieval of organizational structure data (organizations, groups, users and their dependencies).
+See [the specific Readme- Document](bilo_connect.md) for detailed information.
