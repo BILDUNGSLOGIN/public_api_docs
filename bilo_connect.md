@@ -33,4 +33,4 @@ This claim must contain a list of allowed Organization- ID's
 
 
 # OpenAPI Specification
-The [OpenAPI Specification of BILO- Connect](./openapi_bilo_connect.json) provides the implementer with all relevant information to implement the API for their IdP. Please note that the "scopes"- paragraph of the documentation is meant as an example for the IdP. See [Authorization](#authorization) for more information.
+The [OpenAPI Specification of BILO- Connect](bilo-connect.json) provides the implementer with all relevant information to implement the API for their IdP. Please note that the "scopes"- paragraph of the documentation is meant as an example for the IdP. See [Authorization](#authorization) for more information.
