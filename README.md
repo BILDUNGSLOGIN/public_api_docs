@@ -19,5 +19,5 @@ The following API's are being used by BILDUNGSLOGIN and Publishers part of the A
 
 ## BILDUNGSLOGIN BiLo-Connect API
 
-[This API](bilo-connect.json) is used for the retrieval of organizational structure data (organizations, groups, users and their dependencies).
+[This API](bilo-connect.json) is used for the retrieval of organizational structure data (organizations, groups, users and their dependencies), as well as user- context data.
 See [the specific Readme- Document](bilo_connect.md) for detailed information.
