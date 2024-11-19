@@ -1,6 +1,8 @@
-# Public API's of BILDUNGSLOGIN
+# BILDUNGSLOGIN Media API's
 
-The following API's are being used by BILDUNGSLOGIN and Publishers part of the Association of German Publishers within the VBM Service GmbH.
+The following API's are being used by BILDUNGSLOGIN and Publishers as part of the Association of German Publishers within the VBM Service GmbH.
+
+This documentation is provided as-is, under the license terms provided [as documented](LICENSE.txt). The license terms do apply exclusively for documentation purposes, not for the creation or usage of software thereof.
 
 
 ## BILDUNGSLOGIN Metadata- API
@@ -16,6 +18,13 @@ The following API's are being used by BILDUNGSLOGIN and Publishers part of the A
 ## BILDUNGSLOGIN License-Retrieval API
 
 [This API](bilo-licenseretrieval_v1.json) is used for the retrieval of user- specific licenses, as well as user- context
+
+
+
+# BILDUNGSLOGIN Connect API's
+
+The following API's are being used by BILDUNGSLOGIN and Identity Providers (IdP's). This documentation is provided as-is, under the license terms provided [as documented](LICENSE.txt). The license terms do apply exclusively for documentation purposes, not for the creation or usage of software thereof.
+
 
 ## BILDUNGSLOGIN BiLo-Connect API
 
