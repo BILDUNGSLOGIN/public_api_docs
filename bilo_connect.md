@@ -1,35 +1,30 @@
 # BILO- Connect IdP- Structure Data API
-This API provides a simple structure for relevant Organization Structure data of an IdP. It provides two general routes:
-- a route to provide an overview of authorized Organizations. This route is optional, but recommended (see also [Administered Organizations](#administered-organizations-administered_orgs))
+This API provides a simple structure for relevant Organization Structure data of an IdP. It provides three routes:
+- a route to provide an overview of authorized Organizations. This route is optional, but recommended
 - a route to provide the complete structure data of one or more Organization
+- a route to provide user- specific context data
 
 ## Authentication
-Authentication should be handled as per OpenAPI- Specification
+Authentication should be handled as per OAuth2- Specification, and should be provided as a Bearer- Token in the Authorization- Header. The token should be provided by the IdP providing the API.
 
 ## Authorization
-The Authorization of the API is split in two parts. This is reflected as an example with the "scopes"- documentation in the OpenAPI- Documentation.
+The API should be protected by an OAuth2- Authorization Server. The API should provide scopes for the following routes:
 
-### Organization- Admin- Role (org_admin)
-The IdP must provide an OIDC- Claim (e.g. Role) to ensure that the current token is allowed to query the BILO- Structure- API.
+### Organization- Routes (/orgs- and /org_info)
+The recommended way to authenticate a user against these routes is to use an Authorization Grant token (access_token of the user querying the API).
 
-#### Client Credentials Grant Token
-If a client credentials grant is being used for authorization, the implementation of this feature is up to the implementer
+The IdP should provide an OIDC- Claim (e.g. Role) to ensure that the current token is allowed to query the API. This claim will also be used to limit access to the license manager application.
 
-#### Authorization Grant Token
-This method allows a user which is allowed to access the BILO Licensemanager the additional right to query the BILO- Structure API of the corresponding IdP.
-Hence, a claim in the access token of the user (e.g. expressed as a Role) needs to declare this right.
+The token should be provided by the IdP hosting the API, whereas:
+- the `/org-info` - route will return a short list of the Organizations the user is allowed to administer
+  - should this route be not available, the list of organizations the user is allowed to administer should be provided in a claim, containing the org_id's of the organizations to be used in the `/orgs`- route
+- the `/orgs` - route will return the structure data of the Organization(s) the user is allowed to administer
 
 
-### Administered Organizations (administered_orgs)
-The IdP shall provide an OIDC- Claim containing a list of organizations, which the token holder is allowed query.
+### User- Context- Role (/user route)
+The recommended way to authenticate a user against these routes is to use an Authorization Grant token (access_token of the user querying the API).
 
-This feature is optional, depending on the provisioning of the auth_orgs- API.
-
-#### Client Credentials Grant Token
-If a client credentials grant is being used for authorization, the implementation of this feature is up to the implementer
-
-#### Authorization Grant Token
-This claim must contain a list of allowed Organization- ID's
+The IdP should provide an OIDC- Claim (e.g. Role) to ensure that the current token is allowed to query the API. If the IdP does not provide this claim, access to the API will be available for all users of the IdP.
 
 
 # OpenAPI Specification
