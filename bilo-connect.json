@@ -3,7 +3,7 @@
   "info": {
     "title": "BiLo-Connect API",
     "description": "Provides for the retrieval of organizational structure data \n(organizations, groups, users and their dependencies), authorized organizations as well as user context data",
-    "version": "1.1",
+    "version": "1.2",
     "contact": {
       "name": "BILDUNGSLOGIN, VBM Service GmbH",
       "url": "https://info.bildungslogin.de"
@@ -252,7 +252,7 @@
             "$ref": "#/components/schemas/GroupType"
           }
         },
-        "description": "single group, WITH users"
+        "description": "single group base information, without users"
       },
       "GroupType": {
         "title": "GroupType",
@@ -275,6 +275,14 @@
             }
           }
         }
+      },
+      "OrganizationAuthority": {
+        "title": "OrganizationAuthority",
+        "type": "string",
+        "description": "Organization authority (e.g. Schulträger)",
+        "maxLength": 255,
+        "minLength": 1,
+        "examples": ["Landesverwaltung X"]
       },
       "OrganizationStructure": {
         "title": "OrganizationStructure",
@@ -313,26 +321,7 @@
             ]
           },
           "authority": {
-            "title": "Authority",
-            "anyOf": [
-              {
-                "description": "Organization authority (e.g. Schulträger)",
-                "example": "Landesverwaltung X",
-                "anyOf": [
-                  {
-                    "maxLength": 255,
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ]
+            "$ref": "#/components/schemas/OrganizationAuthority"
           },
           "name": {
             "title": "Name",
@@ -401,26 +390,7 @@
             ]
           },
           "authority": {
-            "title": "Authority",
-            "anyOf": [
-              {
-                "description": "Organization authority (e.g. Schulträger)",
-                "example": "Landesverwaltung X",
-                "anyOf": [
-                  {
-                    "maxLength": 255,
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ]
+            "$ref": "#/components/schemas/OrganizationAuthority"
           },
           "name": {
             "title": "Name",
@@ -483,26 +453,7 @@
             ]
           },
           "authority": {
-            "title": "Authority",
-            "anyOf": [
-              {
-                "description": "Organization authority (e.g. Schulträger)",
-                "example": "Landesverwaltung X",
-                "anyOf": [
-                  {
-                    "maxLength": 255,
-                    "minLength": 1,
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ]
+            "$ref": "#/components/schemas/OrganizationAuthority"
           },
           "name": {
             "title": "Name",
@@ -538,7 +489,12 @@
       },
       "OrganizationType": {
         "title": "OrganizationType",
-        "type": "string"
+        "description": "Type of organization",
+        "type": "string",
+        "enum": [
+          "school"
+        ],
+        "examples": ["school"]
       },
       "UserInfo": {
         "title": "UserInfo",
