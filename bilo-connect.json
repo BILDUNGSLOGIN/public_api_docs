@@ -181,8 +181,9 @@
   },
   "components": {
     "schemas": {
-      "Group": {
-        "title": "Group",
+      "GroupWithUserIds": {
+        "title": "GroupWithUserIds",
+        "alternativeNames": ["Group"],
         "required": [
           "group_type",
           "id",
@@ -223,8 +224,9 @@
         },
         "description": "single group, WITH users"
       },
-      "GroupInfo": {
-        "title": "GroupInfo",
+      "GroupContext": {
+        "title": "GroupContext",
+        "alternativeNames": ["GroupInfo"],
         "required": [
           "group_type",
           "id",
@@ -342,14 +344,14 @@
             "title": "Groups",
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Group"
+              "$ref": "#/components/schemas/GroupWithUserIds"
             }
           },
           "users": {
             "title": "Users",
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UserInfo"
+              "$ref": "#/components/schemas/User"
             }
           }
         },
@@ -481,7 +483,7 @@
             "title": "Groups",
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/GroupInfo"
+              "$ref": "#/components/schemas/GroupContext"
             }
           }
         },
@@ -496,8 +498,9 @@
         ],
         "examples": ["school"]
       },
-      "UserInfo": {
-        "title": "UserInfo",
+      "User": {
+        "title": "User",
+        "alternativeNames": ["UserInfo"],
         "required": [
           "id",
           "roles"
