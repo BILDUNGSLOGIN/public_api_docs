@@ -5,7 +5,7 @@
     "description" : "This API description contains the retrieval of an authentication token for the UCS@school APIs, as well as the route of the BILDUNGSLOGIN license manager plugin, to retrieve user-specific licenses",
     "version" : "1.1.0",
     "contact": {
-      "name": "BILDUNGSLOGIN, VBM Service GmbH",
+      "name": "BILDUNGSLOGIN GmbH",
       "url": "https://info.bildungslogin.de"
     },
     "license": {

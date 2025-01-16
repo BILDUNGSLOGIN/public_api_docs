@@ -1,6 +1,6 @@
 # BILDUNGSLOGIN Media API's
 
-The following API's are being used by BILDUNGSLOGIN and Publishers as part of the Association of German Publishers within the VBM Service GmbH.
+The following API's are being used by BILDUNGSLOGIN and Publishers as part of the Association of German Publishers within the BILDUNGSLOGIN GmbH.
 
 This documentation is provided as-is, under the license terms provided [as documented](LICENSE.txt). The license terms do apply exclusively for documentation purposes, not for the creation or usage of software thereof.
 
