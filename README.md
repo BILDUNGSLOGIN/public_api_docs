@@ -15,10 +15,14 @@ This documentation is provided as-is, under the license terms provided [as docum
 [This API](bilo-media.json) is used for the provisioning of License- Packages
 
 
-## BILDUNGSLOGIN License-Retrieval API
+## BILDUNGSLOGIN License-Retrieval API (v1)
 
 [This API](bilo-licenseretrieval_v1.json) is used for the retrieval of user- specific licenses, as well as user- context
 
+
+## BILDUNGSLOGIN License-Retrieval API (v2)
+
+[This API](bilo-licenseretrieval_v2.json) is used for the retrieval of user- specific licenses, as well as user- context. This API is an extension of the v1 API, providing additional functionality and data.
 
 
 # BILDUNGSLOGIN Connect API's

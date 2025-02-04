@@ -692,7 +692,7 @@
     "securitySchemes": {
       "client_token": {
         "type": "oauth2",
-        "description": "Cliend Credentials Grant Token",
+        "description": "Client Credentials Grant Token",
         "flows": {
           "clientCredentials": {
             "tokenUrl": "https://<FQDN>/realms/<realm>/protocol/openid-connect/token",

@@ -1,0 +1,1049 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Licensemanager Assignments Lookup",
+        "description": "API that provides resources and operations to lookup products licensed to license holder objects",
+        "contact": {
+            "name": "Assistance with this API is limited to contractual agreements"
+        },
+        "license": {
+            "name": "This API Endpoint is only to be used if contractually agreed upon. This API and all                 relevant information is held under proprietary license agreements",
+            "identifier": ""
+        },
+        "version": "0.2"
+    },
+    "paths": {
+        "/{tenant_id}/user/{user_id}": {
+            "get": {
+                "tags": [
+                    "User Specific assignments lookup - generic format"
+                ],
+                "summary": "lookup licensed products for an user",
+                "description": "Lookup ALL licensed products for the user identified by the user id parameter. \n\nTODO document security requiremets\n    \nThis query requires at least one of the *-query\nroles, depending on what facets are selected for the search result\n(see \"inc\" query parameter for details)\n    \nThe resulting product assignments are placed inside the corresponding parts \nof the result object, depending on the type of assignment (individual \nor on organization / group level).",
+                "operationId": "find_assignments_for_user__tenant_id__user__user_id__get",
+                "security": [
+                    {
+                        "client_token": [
+                            "license-query",
+                            "product-query",
+                            "impersonation"
+                        ]
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "tenant_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minLength": 3,
+                            "description": "ID of the tenant to use for lookup",
+                            "title": "Tenant Id"
+                        },
+                        "description": "ID of the tenant to use for lookup"
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255,
+                            "description": "the user id to find assignments for",
+                            "title": "User Id"
+                        },
+                        "description": "the user id to find assignments for"
+                    },
+                    {
+                        "name": "inc",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "$ref": "#/components/schemas/AssignmentRepresentation"
+                            },
+                            "description": "\nData facets to include into search result for each matching licensed product. \nMultiple occurences are supported, leading to include ALL requested facets.\n            \nImportant: Note that inclusion of data facets requires suitable roles:\n            \n    product -> product-query,\n    license -> license-query\n            \nA facet request for \"license_status\" implies fragment \"license\" returned.\n            \nRequests asking for facets without the required roles are rejected (403)\n\n",
+                            "default": [
+                                "product"
+                            ],
+                            "title": "Inc"
+                        },
+                        "description": "\nData facets to include into search result for each matching licensed product. \nMultiple occurences are supported, leading to include ALL requested facets.\n            \nImportant: Note that inclusion of data facets requires suitable roles:\n            \n    product -> product-query,\n    license -> license-query\n            \nA facet request for \"license_status\" implies fragment \"license\" returned.\n            \nRequests asking for facets without the required roles are rejected (403)\n\n"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserAssignmentsWithContext"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/{tenant_id}/product": {
+            "get": {
+                "tags": [
+                    "Single Product assignment lookup"
+                ],
+                "summary": "lookup single licensed product (matching query)",
+                "description": "Lookup ONE single licensed product matching the query parameters.\n    \nIn case no assignment matches the query, a status of HTTP NOT FOUND (404) is returned.  \n        \nIf more than one product assignment matches the query, \nonly the one \"best\" match is returned. \n    \nCriteria to find the best match:\n1) license type: single, volume, group, school (in this order)\n2) assignment date (more recent is better)\n3) remaining validity (longer is better)\n    \nThis query requires at least one of the *-query\nroles, depending on what facets are selected for the search result\n(see \"inc\" query parameter for details)\n    \nTODO document security requiremets",
+                "operationId": "find_product__tenant_id__product_get",
+                "security": [
+                    {
+                        "client_token": [
+                            "license-query",
+                            "product-query",
+                            "impersonation"
+                        ]
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "tenant_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minLength": 3,
+                            "description": "Tenant to use for lookup.\n                Note: Requires the requesting client to be authorized for this tenant",
+                            "title": "Tenant Id"
+                        },
+                        "description": "Tenant to use for lookup.\n                Note: Requires the requesting client to be authorized for this tenant"
+                    },
+                    {
+                        "name": "org_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255,
+                            "description": "Organization wherein assignments are searched. \n                Note: Requires the requesting client to have read access to this org.",
+                            "title": "Org Id"
+                        },
+                        "description": "Organization wherein assignments are searched. \n                Note: Requires the requesting client to have read access to this org."
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 255,
+                            "title": "User Id"
+                        }
+                    },
+                    {
+                        "name": "product_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "description": "The product identifier to look for. Full product ID required,\n                no support to search partially specified IDs",
+                            "title": "Product Id"
+                        },
+                        "description": "The product identifier to look for. Full product ID required,\n                no support to search partially specified IDs"
+                    },
+                    {
+                        "name": "group_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 255,
+                                    "description": "Organization-unique ID of the group",
+                                    "examples": [
+                                        "2ea74a4b-005e-460e-a23f-70f2c9cdc8bf"
+                                    ]
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "description": "Restrict results for group assigned products to this group. \n            If present, the following behaviour is applied: Products with license \n            type \"group\" will included as result candidates ONLY if the group they \n            are licensed for matches the query. Products with OTHER license types \n            are NOT AFFECTED by this parameter, and will be considered as result\n            candidates nonetheless.\n        ",
+                            "title": "Group Id"
+                        },
+                        "description": "Restrict results for group assigned products to this group. \n            If present, the following behaviour is applied: Products with license \n            type \"group\" will included as result candidates ONLY if the group they \n            are licensed for matches the query. Products with OTHER license types \n            are NOT AFFECTED by this parameter, and will be considered as result\n            candidates nonetheless.\n        "
+                    },
+                    {
+                        "name": "inc",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "$ref": "#/components/schemas/AssignmentRepresentation"
+                            },
+                            "description": "\nData facets to include into search result for each matching licensed product. \nMultiple occurences are supported, leading to include ALL requested facets.\n            \nImportant: Note that inclusion of data facets requires suitable roles:\n            \n    product -> product-query,\n    license -> license-query\n            \nA facet request for \"license_status\" implies fragment \"license\" returned.\n            \nRequests asking for facets without the required roles are rejected (403)\n",
+                            "default": [
+                                "product"
+                            ],
+                            "title": "Inc"
+                        },
+                        "description": "\nData facets to include into search result for each matching licensed product. \nMultiple occurences are supported, leading to include ALL requested facets.\n            \nImportant: Note that inclusion of data facets requires suitable roles:\n            \n    product -> product-query,\n    license -> license-query\n            \nA facet request for \"license_status\" implies fragment \"license\" returned.\n            \nRequests asking for facets without the required roles are rejected (403)\n"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserAssignmentsWithContext"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AssignedLicenseStatusInfo": {
+                "properties": {
+                    "assignment_date": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Date of in datetime format",
+                                "examples": [
+                                    "2024-10-06 00:00:00"
+                                ]
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Assignment Date",
+                        "description": "timestamp when the license has been assigned to a license holder"
+                    },
+                    "provisioned_date": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Date of in datetime format",
+                                "examples": [
+                                    "2024-10-06 00:00:00"
+                                ]
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Provisioned Date",
+                        "description": "timestamp when the license has been used for the first time"
+                    },
+                    "status_activation": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/LicenseActivationStatus"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "status_validity": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/LicenseValidityStatus"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "validity_start": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Date of in datetime format",
+                                "examples": [
+                                    "2024-10-06 00:00:00"
+                                ]
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Validity Start"
+                    },
+                    "validity_end": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Date of in datetime format",
+                                "examples": [
+                                    "2024-10-06 00:00:00"
+                                ]
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Validity End"
+                    }
+                },
+                "type": "object",
+                "title": "AssignedLicenseStatusInfo",
+                "description": "status information for an already assigned single license.\n\ndiscussion: is provisioned_date always set in this case?"
+            },
+            "AssignmentRepresentation": {
+                "type": "string",
+                "enum": [
+                    "product",
+                    "license",
+                    "license_status"
+                ],
+                "title": "AssignmentRepresentation",
+                "description": "determines the shape of external assignments representations"
+            },
+            "BiloSchoolClass": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "Id",
+                        "description": "Organization-unique ID of the group",
+                        "examples": [
+                            "2ea74a4b-005e-460e-a23f-70f2c9cdc8bf"
+                        ]
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "Name",
+                        "description": "human readable name of the group",
+                        "examples": [
+                            "Klasse 5a",
+                            "Arbeitsgruppe Englisch 7"
+                        ]
+                    },
+                    "licenses": {
+                        "items": {
+                            "type": "string",
+                            "maxLength": 255,
+                            "description": "License code, issued and verified by a publisher. The first 3 chars are the publisher ID",
+                            "examples": [
+                                "COR-IJD7WA-DPLKR9-D2U8BD"
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Licenses"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "name",
+                    "licenses"
+                ],
+                "title": "BiloSchoolClass"
+            },
+            "BiloSchoolContext": {
+                "properties": {
+                    "school_authority": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 255,
+                                "minLength": 1
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "School Authority",
+                        "description": "Organization authority (e.g. Schulträger)",
+                        "examples": [
+                            "Landesverwaltung X"
+                        ]
+                    },
+                    "school_identifier": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "School Identifier",
+                        "description": "IdP-wide identifier of the organization",
+                        "examples": [
+                            "org-01"
+                        ]
+                    },
+                    "school_name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "School Name",
+                        "description": "A name that the IdP can assign freely",
+                        "examples": [
+                            "63. Grundschule 'Johann Gottlieb Naumann'"
+                        ]
+                    },
+                    "licenses": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string",
+                                    "maxLength": 255,
+                                    "description": "License code, issued and verified by a publisher. The first 3 chars are the publisher ID",
+                                    "examples": [
+                                        "COR-IJD7WA-DPLKR9-D2U8BD"
+                                    ]
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Licenses"
+                    },
+                    "classes": {
+                        "items": {
+                            "$ref": "#/components/schemas/BiloSchoolClass"
+                        },
+                        "type": "array",
+                        "title": "Classes"
+                    },
+                    "workgroups": {
+                        "items": {
+                            "$ref": "#/components/schemas/BiloSchoolWorkgroup"
+                        },
+                        "type": "array",
+                        "title": "Workgroups"
+                    },
+                    "roles": {
+                        "items": {
+                            "$ref": "#/components/schemas/BiloSchoolContextRole"
+                        },
+                        "type": "array",
+                        "minItems": 1,
+                        "uniqueItems": true,
+                        "title": "Role of the User within the school",
+                        "examples": [
+                            "student",
+                            "teacher"
+                        ]
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "school_authority",
+                    "school_identifier",
+                    "school_name",
+                    "classes",
+                    "workgroups",
+                    "roles"
+                ],
+                "title": "BiloSchoolContext"
+            },
+            "BiloSchoolContextRole": {
+                "type": "string",
+                "enum": [
+                    "student",
+                    "teacher",
+                    "staff"
+                ],
+                "title": "BiloSchoolContextRole",
+                "description": "User roles per school context"
+            },
+            "BiloSchoolWorkgroup": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "Id",
+                        "description": "Organization-unique ID of the group",
+                        "examples": [
+                            "2ea74a4b-005e-460e-a23f-70f2c9cdc8bf"
+                        ]
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "Name",
+                        "description": "human readable name of the group",
+                        "examples": [
+                            "Klasse 5a",
+                            "Arbeitsgruppe Englisch 7"
+                        ]
+                    },
+                    "licenses": {
+                        "items": {
+                            "type": "string",
+                            "maxLength": 255,
+                            "description": "License code, issued and verified by a publisher. The first 3 chars are the publisher ID",
+                            "examples": [
+                                "COR-IJD7WA-DPLKR9-D2U8BD"
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Licenses"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "name",
+                    "licenses"
+                ],
+                "title": "BiloSchoolWorkgroup"
+            },
+            "GroupAssignments": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "Id",
+                        "description": "Organization-unique ID of the group",
+                        "examples": [
+                            "2ea74a4b-005e-460e-a23f-70f2c9cdc8bf"
+                        ]
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "Name",
+                        "description": "human readable name of the group",
+                        "examples": [
+                            "Klasse 5a",
+                            "Arbeitsgruppe Englisch 7"
+                        ]
+                    },
+                    "group_type": {
+                        "$ref": "#/components/schemas/GroupType"
+                    },
+                    "media": {
+                        "items": {
+                            "$ref": "#/components/schemas/LicensedMedium"
+                        },
+                        "type": "array",
+                        "title": "Media"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "name",
+                    "group_type",
+                    "media"
+                ],
+                "title": "GroupAssignments",
+                "description": "Basic group information including products\nlicensed to this group (within an organisation)"
+            },
+            "GroupType": {
+                "type": "string",
+                "enum": [
+                    "class",
+                    "workgroup",
+                    "other"
+                ],
+                "title": "GroupType"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "LicenseActivationStatus": {
+                "type": "string",
+                "enum": [
+                    "ACTIVATED",
+                    "NOT_ACTIVATED"
+                ],
+                "title": "LicenseActivationStatus",
+                "description": "indicates whether or not the license has been activated"
+            },
+            "LicenseInfo": {
+                "properties": {
+                    "license_code": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "title": "License Code",
+                        "description": "License code, issued and verified by a publisher. The first 3 chars are the publisher ID",
+                        "examples": [
+                            "COR-IJD7WA-DPLKR9-D2U8BD"
+                        ]
+                    },
+                    "license_type": {
+                        "$ref": "#/components/schemas/LicenseType"
+                    },
+                    "license_special_type": {
+                        "$ref": "#/components/schemas/LicenseSpecialType",
+                        "default": "None"
+                    },
+                    "license_status": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AssignedLicenseStatusInfo"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "license_code",
+                    "license_type"
+                ],
+                "title": "LicenseInfo",
+                "description": "License data required in context of a license assignment"
+            },
+            "LicenseSpecialType": {
+                "type": "string",
+                "enum": [
+                    "None",
+                    "demo",
+                    "teacher"
+                ],
+                "title": "LicenseSpecialType",
+                "description": "License special type (sonderlizenz)"
+            },
+            "LicenseType": {
+                "type": "string",
+                "enum": [
+                    "single",
+                    "volume",
+                    "group",
+                    "school",
+                    "tenant"
+                ],
+                "title": "LicenseType",
+                "description": "License type (lizenztyp)"
+            },
+            "LicenseValidityStatus": {
+                "type": "string",
+                "enum": [
+                    "valid",
+                    "invalid"
+                ],
+                "title": "LicenseValidityStatus",
+                "description": "indicates whether or not the license is valid"
+            },
+            "LicensedMedium": {
+                "properties": {
+                    "product": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/LicensedProduct"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "license": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/LicenseInfo"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    }
+                },
+                "type": "object",
+                "title": "LicensedMedium",
+                "description": "License and product data of a medium already assigned to a license holder"
+            },
+            "LicensedProduct": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "minLength": 1,
+                        "title": "Id",
+                        "description": "BiLo product code, uniqueness guaranteed within the issuing publisher",
+                        "examples": [
+                            "urn:bilo:medium:VLG-123-4567-890"
+                        ]
+                    },
+                    "catalog_id": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 100,
+                                "minLength": 1,
+                                "description": "BiLo Catalog product code, additional product identifier for the BILDUNGSLOGIN Metadata Catalog"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Catalog Id"
+                    },
+                    "licensor": {
+                        "type": "string",
+                        "maxLength": 3,
+                        "minLength": 3,
+                        "title": "Licensor",
+                        "description": "Three letter abbreviation of the publisher",
+                        "examples": [
+                            "VLG",
+                            "TST"
+                        ]
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "licensor"
+                ],
+                "title": "LicensedProduct",
+                "description": "Product data required in context of a license assignment"
+            },
+            "OrganizationAssignments": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "Id",
+                        "description": "IdP-wide identifier of the organization",
+                        "examples": [
+                            "org-01"
+                        ]
+                    },
+                    "org_type": {
+                        "$ref": "#/components/schemas/OrganizationType"
+                    },
+                    "identifier": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 255,
+                                "minLength": 1,
+                                "description": "An identifier (e.g. school abbreviation) that is officially assigned (state/federal)",
+                                "examples": [
+                                    "NI-142342",
+                                    "BW-52332"
+                                ]
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Identifier"
+                    },
+                    "authority": {
+                        "anyOf": [
+                            {
+                                "anyOf": [
+                                    {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "minLength": 1
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ],
+                                "description": "Organization authority (e.g. Schulträger)",
+                                "examples": [
+                                    "Landesverwaltung X"
+                                ]
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Authority"
+                    },
+                    "name": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 255,
+                                "minLength": 1,
+                                "description": "A name that the IdP can assign freely",
+                                "examples": [
+                                    "63. Grundschule 'Johann Gottlieb Naumann'"
+                                ]
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Name"
+                    },
+                    "roles": {
+                        "items": {
+                            "$ref": "#/components/schemas/UserRole"
+                        },
+                        "type": "array",
+                        "uniqueItems": true,
+                        "title": "Roles",
+                        "default": []
+                    },
+                    "media": {
+                        "items": {
+                            "$ref": "#/components/schemas/LicensedMedium"
+                        },
+                        "type": "array",
+                        "title": "Media"
+                    },
+                    "groups": {
+                        "items": {
+                            "$ref": "#/components/schemas/GroupAssignments"
+                        },
+                        "type": "array",
+                        "title": "Groups"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "org_type",
+                    "media",
+                    "groups"
+                ],
+                "title": "OrganizationAssignments",
+                "description": "Basic organization information including products\nlicensed for this organisation and groups within this organisation"
+            },
+            "OrganizationType": {
+                "type": "string",
+                "enum": [
+                    "school"
+                ],
+                "title": "OrganizationType"
+            },
+            "UserAssignments": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "title": "Id",
+                        "description": "identifier for a user within an organization"
+                    },
+                    "first_name": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 255,
+                                "minLength": 1,
+                                "description": "First Name",
+                                "examples": [
+                                    "Max"
+                                ]
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "First Name"
+                    },
+                    "last_name": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 255,
+                                "minLength": 1,
+                                "description": "Last Name",
+                                "examples": [
+                                    "Musternamm"
+                                ]
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Last Name"
+                    },
+                    "user_alias": {
+                        "anyOf": [
+                            {
+                                "type": "string",
+                                "maxLength": 255,
+                                "minLength": 1,
+                                "description": "User Alias",
+                                "examples": [
+                                    "Max M."
+                                ]
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "User Alias"
+                    },
+                    "roles": {
+                        "items": {
+                            "$ref": "#/components/schemas/UserRole"
+                        },
+                        "type": "array",
+                        "uniqueItems": true,
+                        "title": "Roles",
+                        "default": []
+                    },
+                    "media": {
+                        "items": {
+                            "$ref": "#/components/schemas/LicensedMedium"
+                        },
+                        "type": "array",
+                        "title": "Media"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "media"
+                ],
+                "title": "UserAssignments",
+                "description": "Basic user information including products\nlicenced individually to this user"
+            },
+            "UserAssignmentsWithContext": {
+                "properties": {
+                    "user": {
+                        "$ref": "#/components/schemas/UserAssignments"
+                    },
+                    "organizations": {
+                        "items": {
+                            "$ref": "#/components/schemas/OrganizationAssignments"
+                        },
+                        "type": "array",
+                        "title": "Organizations"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "user",
+                    "organizations"
+                ],
+                "title": "UserAssignmentsWithContext",
+                "description": "Product(s) licensed for a single user,\nincluding direct (personal) and indirect (organizational) assignments.\n\nThe product (assignment) is placed inside the corresponding part\nof the result structure, depending on the type of assignment.\n\nFor instance, an product assignment at organization level is placed\ninside the corresponding organization object, a product assigned to the\nuser individually is placed inside the user etc.\n\nEmpty Structure elements (organizations and groups without\nproduct assignments) are included, too."
+            },
+            "UserRole": {
+                "type": "string",
+                "enum": [
+                    "student",
+                    "teacher",
+                    "admin"
+                ],
+                "title": "UserRole",
+                "description": "user role within an organization"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            }
+        },
+        "securitySchemes": {
+            "client_token": {
+                "type": "oauth2",
+                "description": "The relevant roles are not requested by scope, but must exist in the relevant resource_access -> roles claim. \nExample: \"resource_access\": {\"<client_id_of_api>\": {\"roles\":[\"license-query\"]}}. When using the impersonation role to query another users data, the impersonation- role must be present, and the value of the claim \"license-user-id\" must match the value of the user_id in the path.",
+                "flows": {
+                "clientCredentials": {
+                    "tokenUrl": "https://<FQDN>/realms/<realm>/protocol/openid-connect/token",
+                    "scopes": {
+                    "license-query": "Allows to query license- data",
+                    "product-query": "Allows to query product- data",
+                    "impersonation": "Allows the token-holder to impersonate a user"
+                    }
+                },
+                "authorizationCode": {
+                    "authorizationUrl": "https://<FQDN>/realms/<realm>/protocol/openid-connect/auth",
+                    "tokenUrl": "https://<FQDN>/realms/<realm>/protocol/openid-connect/token",
+                    "scopes": {
+                        "license-query": "Allows to query license- data",
+                        "product-query": "Allows to query product- data"
+                    }
+                }
+                }
+            }
+        }
+    }
+}
