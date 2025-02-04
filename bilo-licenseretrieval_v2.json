@@ -4,11 +4,12 @@
         "title": "Licensemanager Assignments Lookup",
         "description": "API that provides resources and operations to lookup products licensed to license holder objects",
         "contact": {
-            "name": "Assistance with this API is limited to contractual agreements"
+            "name": "BILDUNGSLOGIN GmbH",
+            "url": "https://info.bildungslogin.de"
         },
         "license": {
-            "name": "This API Endpoint is only to be used if contractually agreed upon. This API and all                 relevant information is held under proprietary license agreements",
-            "identifier": ""
+            "name": "Creative Commons Attribution Non Commercial No Derivatives 4.0",
+            "identifier": "CC-BY-NC-ND-4.0"
         },
         "version": "0.2"
     },
