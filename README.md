@@ -34,3 +34,14 @@ The following API's are being used by BILDUNGSLOGIN and Identity Providers (IdP'
 
 [This API](bilo-connect.json) is used for the retrieval of organizational structure data (organizations, groups, users and their dependencies), as well as user- context data.
 See [the specific Readme- Document](bilo_connect.md) for detailed information.
+
+
+# OIDC- Connection to BILDUNGSLOGIN
+
+To connect your Organization to the BILDUNGSLOGIN- Broker, you require at least a confidential client, which is then configured to connect at BILDUNGSLOGIN.
+
+For details, please [contact the nice guys from BILDUNGSLOGIN](https://info.bildungslogin.de/kontakt/anfrage-fuer-myportal-myschool)
+
+## Prepare your organizational Keycloak™ to connect to BILDUNGSLOGIN
+
+To give you a hand how to connect to the BILDUNGSLOGIN- Broker, we provide a short [How-To Document](./OIDC_Connection/README.md).
