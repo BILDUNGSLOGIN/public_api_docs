@@ -16,7 +16,7 @@ To connect your Organization to the BILDUNGSLOGIN- Broker, you require at least 
 Please follow the [How-To Document](./OIDC_Connection/README.md) for more detailed information.
 
 ## To connect a UCS- Keycloak™ to BILDUNGSLOGIN
-Please follow the [How-To Document](./OIDC_Connection/README.md) for more detailed information.
+Please follow the [How-To Document](./UCS_Connection/INSTALLATION.md) for more detailed information.
 
 # BILDUNGSLOGIN Connect API
 
