@@ -1,4 +1,17 @@
-# Migration von BILDUNGSLOGIN auf das UCS-Keycloak- Plugin
+# Anschluss eines UCS- Systems mit Keycloak- Plugins an BILDUNGSLOGIN
+
+Um Ihr UCS- System mit der BILDUNGSLOGIN- Lizenzverwaltung zu verbinden, sind einige Konfigurationsschritte in der UCS- Keycloak- App erforderlich.
+Grundsätzlich wird das System über OIDC verbunden.
+
+Dazu ist es notwendig, einen **confidential client** in der Keycloak-App zu erstellen, der die Verbindung zu BILDUNGSLOGIN herstellt. Zusätzlich sind einige **Mapper** zu konfigurieren, um die notwendigen Attribute und Claims zu übermitteln.
+
+## Client Scopes
+
+Es werden ausschließlich die folgenden Scopes benötigt:
+- basic (bei neueren Keycloak- Versionen)
+- openid
+- profile
+- offline_access (optional)
 
 ## Zusätzliche Claims
 

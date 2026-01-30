@@ -8,7 +8,10 @@ Hinweise zur **Nutzungsvereinbarung** und den entstehenden **Kosten** sowie eine
 
 Die neue Lizenzverwaltung von BILDUNGSLOGIN basiert auf einer modernen Architektur mit Frontend/Backend, die containerisiert betrieben wird. Dieser Aufbau ermöglicht einen eigenständigen Betrieb als Teil einer IT-Infrastruktur mit ucs@school durch einen Träger.
 
-Aufgrund der Erfahrung der letzten Jahre macht ein eigenständiger Betrieb aber erst ab einer Schulanzahl > 50 Schulen pro Träger Sinn. Sind weniger Schulen eines Trägers über das IDAM-System an die Lizenzverwaltung anzuschließen, bietet BILDUNGSLOGIN die Nutzung der Lizenzverwaltung als SaaS-Dienst an. Dieser wird über Standardschnittstellen angebunden und ist damit vergleichbar zum Medienregal von BILDUNGSLOGIN.
+Aufgrund der Erfahrung der letzten Jahre macht ein eigenständiger Betrieb aber erst ab einer Schulanzahl > 150 Schulen pro Träger Sinn. Sind weniger Schulen eines Trägers über das IDAM-System an die Lizenzverwaltung anzuschließen, bietet BILDUNGSLOGIN die Nutzung der Lizenzverwaltung als SaaS-Dienst an. Dieser wird über Standardschnittstellen angebunden und ist damit vergleichbar zum Medienregal von BILDUNGSLOGIN.
+
+Die Nutzung des Univention ID-Brokers ist nicht möglich, da nicht alle notwendigen Attribute der Schulstrukturdaten für eine effiziente Lizenzverwaltung übertragen werden können.
+
 
 An der Nutzung des BILDUNGSLOGIN-Medienregals ändert sich durch die neue Lizenzverwaltung nichts.
 
@@ -25,10 +28,10 @@ Für den **Austausch der OIDC-Konfigurationsdaten** erhalten Sie von BILDUNGSLOG
 #### Zusätzliche Claims in OIDC-Tokens
 
 Zusätzlich zur Nutzer-ID ("preferred_username") ist:
-- die **Übermittlung der UCS-School-ID** in OIDC-Claims obligatorisch. Siehe [Details](MIGRATION-mapper.md#hinzufügen-des-claims-ucsschoolschool) zur Konfiguration des Claims ucsschoolSchool, und
-- die **Übermittlung von Gruppen** in OIDC-Claims notwendig, um die Nutzer an der Lizenzverwaltung bzw. beim Medienregal zu autorisieren. Siehe [Details](MIGRATION-mapper.md#hinzufügen-des-claims-ucsschoolgroups) zur Konfiguration des Claims ucsschoolGroups.
+- die **Übermittlung der UCS-School-ID** in OIDC-Claims obligatorisch. Siehe [Details](OIDC-mapper.md#hinzufügen-des-claims-ucsschoolschool) zur Konfiguration des Claims ucsschoolSchool, und
+- die **Übermittlung von Gruppen** in OIDC-Claims notwendig, um die Nutzer an der Lizenzverwaltung bzw. beim Medienregal zu autorisieren. Siehe [Details](OIDC-mapper.md#hinzufügen-des-claims-ucsschoolgroups) zur Konfiguration des Claims ucsschoolGroups.
 
-Die komplette Konfiguration der Clients sowie Mapper finden Sie unter [Details zur Konfiguration](https://github.com/BILDUNGSLOGIN/lizenzmanager_ucs/blob/main/MIGRATION-mapper.md).
+Die komplette Konfiguration der Clients sowie Mapper finden Sie unter [Details zur Konfiguration](https://github.com/BILDUNGSLOGIN/lizenzmanager_ucs/blob/main/OIDC-mapper.md).
 
 ### 2\. Einrichtung der Schulstrukturdaten-Provisionierung über die Kelvin-API
 
