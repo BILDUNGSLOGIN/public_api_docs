@@ -69,7 +69,9 @@ Navigate into the "-dedicated" - Section of the Client- Scope section...
 #### Set the school_id and school_name
 BILDUNGSLOGIN requires a school_id to be transmitted with the user- login. This can originate from a _Hardcoded claim_ (as shown here), a _User Attribute_, or another source, which is configured here to transmit.
 
-In the example below, the school-id is set to the value "school01-ni41241"
+Please consult with BILDUNGSLOGIN the correct requirements for the school_id and school_name, as they may vary depending on the specific implementation and organizational structure.
+
+In the example below, the school-id is set to the value "school01-ni41241". That way, the school_id is fix and the connection can only be used for users of this specific school.
 
 ![ClientScopes_04](./ClientScopes_04.png)
 
