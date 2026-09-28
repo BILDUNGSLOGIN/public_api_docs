@@ -66,8 +66,8 @@ Navigate into the "-dedicated" - Section of the Client- Scope section...
 
 ![ClientScopes_03](./ClientScopes_03.png)
 
-#### Set the school_id and school_name
-BILDUNGSLOGIN requires a school_id to be transmitted with the user- login. This can originate from a _Hardcoded claim_ (as shown here), a _User Attribute_, or another source, which is configured here to transmit.
+#### Add a school_id and optionally school_name- mapper
+BILDUNGSLOGIN requires a school_id (string or array) to be transmitted with the user- login. This can originate from a _Hardcoded claim_ (as shown here) for single-school IdPs, a _User Attribute_, or another source, which is configured here to transmit.
 
 Please consult with BILDUNGSLOGIN the correct requirements for the school_id and school_name, as they may vary depending on the specific implementation and organizational structure.
 
@@ -77,10 +77,21 @@ In the example below, the school-id is set to the value "school01-ni41241". That
 
 Optionally repeat this with _school\_name_
 
-#### Set the user_id
+#### Add a user_id - mapper
 BILDUNGSLOGIN requires a persistent user- id for each user. If you cannot or don't want to use a standard value like _sub_ or _preferred\_username_, you can set this value from another user- attribute as follows:
 
 ![ClientScopes_05](./ClientScopes_05.png)
+
+#### Add a school_role- mapper
+BILDUNGSLOGIN requires a school_role (string or array) to be transmitted with the user- login, if no license- management is in place. This should originate from a _User Attribute_, or another source, which is configured here to transmit.
+
+Valid roles for the school_role include "teacher" and "student", whereas relevant, known (communicated) identifier can be transmitted instead.
+
+#### Add a user_role- mapper
+BILDUNGSLOGIN suggests to transmit a user_role (string or array) to be transmitted with the user- login, to reflect which rights the user has in the BiLo- platform. This should originate from a _User Attribute_, or another source, which is configured here to transmit.
+
+Valid roles for the user_role include "mediashelf-user" and "license-admin", whereas relevant, known (communicated) identifier can be transmitted instead.
+
 
 #### Disallow other scopes
 You probably won't need to transmit other scopes, hence you can restrict the usage of them accordingly.
